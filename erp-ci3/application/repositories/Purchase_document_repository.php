@@ -83,7 +83,11 @@ class Purchase_document_repository extends Base_repository
         $qb = $this->db->select("d.id, d.$noCol AS doc_no, d.$dateCol AS doc_date, d.status, d.notes, d.created_at, u.full_name AS created_by_name")
             ->from("{$this->table} d")->join('users u', 'u.id = d.created_by', 'left')->where('d.company_id', $companyId);
         if ($this->hasSupplier) {
-            $qb->select('s.name AS supplier_name, d.grand_total')->join('suppliers s', 's.id = d.supplier_id', 'left');
+            $qb->join('suppliers s', 's.id = d.supplier_id', 'left')->select('s.name AS supplier_name');
+            $totalCol = $this->table === 'purchase_orders' ? 'grand_total' : (in_array($this->table, ['goods_receipts', 'purchase_returns'], true) ? 'total_value' : null);
+            if ($totalCol) {
+                $qb->select("d.$totalCol AS grand_total");
+            }
         }
         if (!empty($input['status'])) {
             $qb->where('d.status', $input['status']);
