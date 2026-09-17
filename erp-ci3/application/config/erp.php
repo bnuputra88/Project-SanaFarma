@@ -45,6 +45,48 @@ $config['erp_state_machines'] = [
             'APPROVED' => ['post' => 'POSTED'],
         ],
     ],
+    // Phase 3 — Procurement
+    'purchase_request' => [
+        'initial' => 'DRAFT',
+        'final' => ['CLOSED', 'REJECTED', 'CANCELLED'],
+        'transitions' => [
+            'DRAFT' => ['submit' => 'SUBMITTED', 'edit' => 'DRAFT', 'cancel' => 'CANCELLED'],
+            'SUBMITTED' => ['approve' => 'APPROVED', 'reject' => 'REJECTED', 'cancel' => 'CANCELLED'],
+            'APPROVED' => ['close' => 'CLOSED', 'cancel' => 'CANCELLED'],
+        ],
+    ],
+    'purchase_order' => [
+        'initial' => 'DRAFT',
+        'final' => ['CLOSED', 'REJECTED', 'CANCELLED'],
+        'transitions' => [
+            'DRAFT' => ['submit' => 'SUBMITTED', 'edit' => 'DRAFT', 'cancel' => 'CANCELLED'],
+            'SUBMITTED' => ['approve' => 'APPROVED', 'reject' => 'REJECTED', 'cancel' => 'CANCELLED'],
+            'APPROVED' => ['order' => 'ORDERED', 'cancel' => 'CANCELLED'],
+            // PARTIAL/RECEIVED di-set oleh Goods_receipt_service (progres penerimaan), lalu ditutup.
+            'ORDERED' => ['close' => 'CLOSED', 'cancel' => 'CANCELLED'],
+            'PARTIAL' => ['close' => 'CLOSED'],
+            'RECEIVED' => ['close' => 'CLOSED'],
+        ],
+    ],
+    'goods_receipt' => [
+        'initial' => 'DRAFT',
+        'final' => ['REVERSED', 'REJECTED', 'CANCELLED'],
+        'transitions' => [
+            'DRAFT' => ['submit' => 'SUBMITTED', 'edit' => 'DRAFT', 'cancel' => 'CANCELLED'],
+            'SUBMITTED' => ['approve' => 'APPROVED', 'reject' => 'REJECTED', 'cancel' => 'CANCELLED'],
+            'APPROVED' => ['post' => 'POSTED', 'cancel' => 'CANCELLED'],
+            'POSTED' => ['reverse' => 'REVERSED'],
+        ],
+    ],
+    'purchase_return' => [
+        'initial' => 'DRAFT',
+        'final' => ['POSTED', 'REJECTED', 'CANCELLED'],
+        'transitions' => [
+            'DRAFT' => ['submit' => 'SUBMITTED', 'edit' => 'DRAFT', 'cancel' => 'CANCELLED'],
+            'SUBMITTED' => ['approve' => 'APPROVED', 'reject' => 'REJECTED', 'cancel' => 'CANCELLED'],
+            'APPROVED' => ['post' => 'POSTED', 'cancel' => 'CANCELLED'],
+        ],
+    ],
 ];
 
 // Default numbering patterns; overridable per company in document_sequences.pattern
@@ -54,6 +96,11 @@ $config['erp_numbering_defaults'] = [
     'STOCK_OPN' => ['pattern' => 'OPN/{BRANCH}/{YYYY}{MM}/{SEQ:4}', 'reset' => 'monthly'],
     'STOCK_MOV' => ['pattern' => 'MOV/{YYYY}{MM}{DD}/{SEQ:6}', 'reset' => 'daily'],
     'BATCH_AUTO' => ['pattern' => 'B{YY}{MM}{SEQ:5}', 'reset' => 'monthly'],
+    'PURCHASE_REQ' => ['pattern' => 'PR/{BRANCH}/{YYYY}{MM}/{SEQ:5}', 'reset' => 'monthly'],
+    'PURCHASE_ORDER' => ['pattern' => 'PO/{BRANCH}/{YYYY}{MM}/{SEQ:5}', 'reset' => 'monthly'],
+    'GOODS_RECEIPT' => ['pattern' => 'GR/{BRANCH}/{YYYY}{MM}/{SEQ:5}', 'reset' => 'monthly'],
+    'PURCHASE_RETURN' => ['pattern' => 'PRT/{BRANCH}/{YYYY}{MM}/{SEQ:5}', 'reset' => 'monthly'],
+    'AP_INVOICE' => ['pattern' => 'AP/{YYYY}{MM}/{SEQ:5}', 'reset' => 'monthly'],
 ];
 
 // Stock movement types: sign tells the engine whether the line adds (+1) or removes (-1) on-hand quantity.

@@ -60,3 +60,20 @@ Konvensi: PK `id` (INT/BIGINT UNSIGNED AI), FK bernama `fk_<tabel>_<kolom>`, UNI
 - Audit per record → `idx_audit_entity`; per user/periode → `idx_audit_user_created`.
 - Daftar dokumen per status → `idx_sa_status`, `idx_st_status`, `idx_so_status`.
 - Pencarian produk POS → `idx_products_barcode` (exact), `idx_products_name`/`generic` (prefix LIKE).
+
+## Phase 3 — Procurement (migrasi `004_procurement.php`)
+Total menjadi 39 + 13 = **52 tabel** + `schema_migrations`. Semua InnoDB, utf8mb4.
+
+- **suppliers** — master supplier/PBF. `uq_suppliers_company_code`. `supplier_type` ENUM(DISTRIBUTOR|MANUFACTURER|PBF|IMPORTER|OTHER), `payment_term_days`, `license_no` (izin PBF, konfigurasi), soft-delete. FK `batches.supplier_id → suppliers.id` ditambahkan di migrasi ini.
+- **supplier_products** — katalog per supplier: `last_price`, `min_order_qty`, `lead_time_days`, `is_preferred`. `uq_sp_supplier_product`.
+- **supplier_price_history** — append-only riwayat harga beli; `po_price` disimpan untuk deteksi varian GR≠PO. Index `idx_sph_supplier_product`.
+- **purchase_requests / _items** — PR. Status DRAFT→SUBMITTED→APPROVED→CLOSED (+REJECTED/CANCELLED). `total_estimated`, versioned.
+- **purchase_orders / _items** — PO. Status DRAFT→SUBMITTED→APPROVED→ORDERED→(PARTIAL|RECEIVED)→CLOSED. Header menyimpan `subtotal/discount_total/tax_total/grand_total`; item `qty_received` dilacak per baris. FK `pr_id`, `supplier_id`, `warehouse_id`.
+- **goods_receipts / _items** — GR. Status DRAFT→SUBMITTED→APPROVED→POSTED→REVERSED. Item: `batch_no`+`expiry_date`+`manufacture_date` (capture), `location_id` (put-away), `condition_code`, `inspection_result` (ACCEPTED|QUARANTINE|REJECTED), `batch_id` diisi setelah posting. `movement_id`/`reversal_movement_id` → `stock_movements`.
+- **purchase_returns / _items** — retur ke supplier via `ISSUE` + `reason_type=RETURN`. Status DRAFT→SUBMITTED→APPROVED→POSTED. Item pakai `batch_id` + `condition_code`.
+- **ap_invoices / _items** — AP foundation, dibuat dari GR POSTED. Status DRAFT|OPEN|PARTIAL|PAID|CANCELLED. Pembayaran & posting GL → Phase 6.
+
+### Indexing Phase 3
+- Daftar dokumen per status → `idx_pr_status`, `idx_po_status`, `idx_gr_status`, `idx_prt_status`, `idx_ap_status`.
+- Penerimaan per PO → `idx_gri_poitem`, `idx_gr_po`. Trace batch dari GR → `batches.source_ref_type/id` (`goods_receipts`).
+- Riwayat harga per supplier/produk → `idx_sph_supplier_product`. AP jatuh tempo → `idx_ap_due`.
