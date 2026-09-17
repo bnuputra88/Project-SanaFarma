@@ -1,0 +1,31 @@
+{
+    "name": "pharmaerp/erp-ci3",
+    "description": "PharmaERP - ERP + Inventory + Pharmacy Management System (CodeIgniter 3, PHP 7.4, MySQL 8)",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": ">=7.4 <8.0",
+        "ext-pdo_mysql": "*",
+        "ext-mbstring": "*",
+        "ext-json": "*",
+        "ext-openssl": "*",
+        "codeigniter/framework": "3.1.13"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "test:unit": "phpunit --testsuite Unit",
+        "lint": "for f in $(find application tests -name '*.php'); do php -l $f > /dev/null || exit 1; done; echo LINT OK"
+    },
+    "config": {
+        "platform": {"php": "7.4.33"},
+        "sort-packages": true
+    }
+}

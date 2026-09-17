@@ -1,0 +1,1 @@
+<?php $this->load->view('inventory/_doc_list', ['page' => $page, 'base' => 'inventory/transfers', 'title_new' => 'Transfer Baru', 'perm' => 'inventory.transfer', 'testid' => 'transfer', 'statuses' => ['DRAFT', 'SUBMITTED', 'APPROVED', 'IN_TRANSIT', 'RECEIVED', 'REJECTED', 'CANCELLED']]); ?>

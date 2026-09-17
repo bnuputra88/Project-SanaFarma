@@ -1,0 +1,7 @@
+.env
+vendor/
+application/logs/*.php
+application/cache/*
+!application/cache/index.html
+storage/uploads/*
+.phpunit.result.cache

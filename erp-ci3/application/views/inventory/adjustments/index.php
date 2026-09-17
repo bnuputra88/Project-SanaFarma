@@ -1,0 +1,1 @@
+<?php $this->load->view('inventory/_doc_list', ['page' => $page, 'base' => 'inventory/adjustments', 'title_new' => 'Penyesuaian Baru', 'perm' => 'inventory.adjustment', 'testid' => 'adjustment', 'statuses' => ['DRAFT', 'SUBMITTED', 'APPROVED', 'POSTED', 'REJECTED', 'CANCELLED']]); ?>

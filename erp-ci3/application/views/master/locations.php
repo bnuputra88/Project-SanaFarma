@@ -1,0 +1,4 @@
+<h6 class="mb-3">Gudang: <strong><?= e($warehouse['name']) ?></strong> <span class="font-monospace text-muted"><?= e($warehouse['code']) ?></span> · <a href="<?= site_url('master/warehouses') ?>">kembali</a></h6>
+<?php $this->load->view('master/_inline_crud', ['rows' => $rows, 'save_url' => "master/warehouses/{$warehouse['id']}/locations/save", 'perm_prefix' => 'master.warehouse', 'testid' => 'location',
+    'fields' => ['code' => ['Kode', 'text'], 'name' => ['Nama', 'text'], 'location_type' => ['Tipe', 'select', ['BIN' => 'Bin', 'RACK' => 'Rak', 'ZONE' => 'Zona']], 'parent_id' => ['Induk', 'select', ['' => '—'] + array_column($rows, 'code', 'id')],
+        'is_default' => ['Default', 'check', null, 0], 'is_quarantine' => ['Karantina', 'check', null, 0], 'is_active' => ['Aktif', 'check', null, 1]]]); ?>

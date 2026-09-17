@@ -1,0 +1,11 @@
+<div class="erp-page-head"><form class="erp-filter" method="get" data-testid="audit-filter">
+    <select class="form-select form-select-sm" name="module"><option value="">Semua modul</option><?php foreach ($modules as $k => $l): ?><option value="<?= $k ?>" <?= ($_GET['module'] ?? '') === $k ? 'selected' : '' ?>><?= e($l) ?></option><?php endforeach; ?></select>
+    <input class="form-control form-control-sm" name="entity" value="<?= e($_GET['entity'] ?? '') ?>" placeholder="Entity (mis. products)"><input class="form-control form-control-sm" name="entity_id" value="<?= e($_GET['entity_id'] ?? '') ?>" placeholder="ID" style="width:90px">
+    <input class="form-control form-control-sm" name="reference_no" value="<?= e($_GET['reference_no'] ?? '') ?>" placeholder="No. referensi">
+    <input class="form-control form-control-sm" type="date" name="date_from" value="<?= e($_GET['date_from'] ?? '') ?>"><input class="form-control form-control-sm" type="date" name="date_to" value="<?= e($_GET['date_to'] ?? '') ?>">
+    <button class="btn btn-sm btn-outline-secondary">Filter</button></form></div>
+<div class="card erp-card"><div class="table-responsive"><table class="table table-sm table-hover erp-table mb-0" data-testid="audit-table">
+<thead><tr><th><?= sort_link('created_at', 'Waktu') ?></th><th><?= sort_link('username', 'Pengguna') ?></th><th><?= sort_link('module', 'Modul') ?></th><th>Aksi</th><th>Entity</th><th>Referensi</th><th>IP</th><th></th></tr></thead><tbody>
+<?php foreach ($page->items as $r): ?><tr><td class="text-nowrap small"><?= fmt_date($r['created_at'], 'd/m/Y H:i:s') ?></td><td><?= e($r['username'] ?? 'sistem') ?></td><td><?= e($r['module']) ?></td><td><code><?= e($r['action']) ?></code></td><td class="small"><?= e($r['entity']) ?> #<?= e($r['entity_id']) ?></td><td class="font-monospace small"><?= e($r['reference_no']) ?></td><td class="small text-muted"><?= e($r['ip_address']) ?></td>
+<td class="text-end"><a class="btn btn-xs btn-outline-secondary" href="<?= site_url('audit/' . $r['id']) ?>" data-testid="audit-view-<?= $r['id'] ?>"><i class="bi bi-eye"></i></a></td></tr><?php endforeach; ?>
+</tbody></table></div><div class="card-footer py-1"><?php $this->load->view('partials/pagination', ['page' => $page]); ?></div></div>

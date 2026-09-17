@@ -1,0 +1,1 @@
+<?php $this->load->view('inventory/_doc_list', ['page' => $page, 'base' => 'inventory/opnames', 'title_new' => 'Opname Baru', 'perm' => 'inventory.opname', 'testid' => 'opname', 'statuses' => ['DRAFT', 'COUNTING', 'SUBMITTED', 'APPROVED', 'POSTED', 'CANCELLED']]); ?>
