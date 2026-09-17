@@ -40,3 +40,13 @@ $lang['action_ship'] = 'Kirim';
 $lang['action_receive'] = 'Terima';
 $lang['action_start'] = 'Mulai Hitung';
 $lang['action_edit'] = 'Ubah';
+$lang['action_order'] = 'Kirim ke Supplier';
+$lang['action_close'] = 'Tutup';
+$lang['action_reverse'] = 'Balik';
+
+$lang['status_ordered'] = 'Dipesan';
+$lang['status_partial'] = 'Diterima Sebagian';
+$lang['status_closed'] = 'Ditutup';
+$lang['status_open'] = 'Terbuka';
+$lang['status_partial_paid'] = 'Dibayar Sebagian';
+$lang['status_paid'] = 'Lunas';

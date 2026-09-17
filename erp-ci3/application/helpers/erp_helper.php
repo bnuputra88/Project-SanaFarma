@@ -32,6 +32,7 @@ function status_badge(string $status): string
     $map = [
         'DRAFT' => 'secondary', 'SUBMITTED' => 'info', 'COUNTING' => 'info', 'APPROVED' => 'primary', 'IN_TRANSIT' => 'warning',
         'POSTED' => 'success', 'RECEIVED' => 'success', 'REJECTED' => 'danger', 'CANCELLED' => 'dark', 'REVERSED' => 'dark',
+        'ORDERED' => 'primary', 'PARTIAL' => 'warning', 'CLOSED' => 'dark', 'OPEN' => 'info', 'PAID' => 'success',
         'ACTIVE' => 'success', 'INACTIVE' => 'secondary', 'GOOD' => 'success', 'QUARANTINE' => 'warning', 'DAMAGED' => 'danger', 'EXPIRED' => 'danger',
     ];
     $cls = $map[$status] ?? 'secondary';

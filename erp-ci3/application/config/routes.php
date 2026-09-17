@@ -71,6 +71,36 @@ $route['inventory/opnames/(:num)'] = 'stock_opnames/show/$1';
 $route['inventory/opnames/(:num)/count'] = 'stock_opnames/count/$1';
 $route['inventory/opnames/(:num)/action/(:any)'] = 'stock_opnames/action/$1/$2';
 
+// Purchasing (Phase 3)
+$route['purchasing/suppliers'] = 'suppliers/index';
+$route['purchasing/suppliers/create'] = 'suppliers/create';
+$route['purchasing/suppliers/(:num)'] = 'suppliers/show/$1';
+$route['purchasing/suppliers/(:num)/edit'] = 'suppliers/edit/$1';
+$route['purchasing/requests'] = 'purchase_requests/index';
+$route['purchasing/requests/create'] = 'purchase_requests/create';
+$route['purchasing/requests/(:num)'] = 'purchase_requests/show/$1';
+$route['purchasing/requests/(:num)/edit'] = 'purchase_requests/edit/$1';
+$route['purchasing/requests/(:num)/action/(:any)'] = 'purchase_requests/action/$1/$2';
+$route['purchasing/orders'] = 'purchase_orders/index';
+$route['purchasing/orders/create'] = 'purchase_orders/create';
+$route['purchasing/orders/(:num)'] = 'purchase_orders/show/$1';
+$route['purchasing/orders/(:num)/edit'] = 'purchase_orders/edit/$1';
+$route['purchasing/orders/(:num)/action/(:any)'] = 'purchase_orders/action/$1/$2';
+$route['purchasing/receipts'] = 'goods_receipts/index';
+$route['purchasing/receipts/create'] = 'goods_receipts/create';
+$route['purchasing/receipts/(:num)'] = 'goods_receipts/show/$1';
+$route['purchasing/receipts/(:num)/edit'] = 'goods_receipts/edit/$1';
+$route['purchasing/receipts/(:num)/action/(:any)'] = 'goods_receipts/action/$1/$2';
+$route['purchasing/returns'] = 'purchase_returns/index';
+$route['purchasing/returns/create'] = 'purchase_returns/create';
+$route['purchasing/returns/(:num)'] = 'purchase_returns/show/$1';
+$route['purchasing/returns/(:num)/edit'] = 'purchase_returns/edit/$1';
+$route['purchasing/returns/(:num)/action/(:any)'] = 'purchase_returns/action/$1/$2';
+$route['purchasing/ap-invoices'] = 'ap_invoices/index';
+$route['purchasing/ap-invoices/(:num)'] = 'ap_invoices/show/$1';
+$route['purchasing/ap-invoices/from-gr/(:num)'] = 'ap_invoices/create_from_gr/$1';
+$route['purchasing/ap-invoices/(:num)/cancel'] = 'ap_invoices/cancel/$1';
+
 // REST API v1
 $route['api/v1/health'] = 'api/v1/health/index';
 $route['api/v1/auth/login'] = 'api/v1/auth/login';
@@ -83,6 +113,16 @@ $route['api/v1/stock/fefo'] = 'api/v1/stock/fefo';
 $route['api/v1/stock/ledger'] = 'api/v1/stock/ledger';
 $route['api/v1/stock/adjustments'] = 'api/v1/stock/adjustments';
 $route['api/v1/stock/adjustments/(:num)/(:any)'] = 'api/v1/stock/adjustment_action/$1/$2';
+$route['api/v1/suppliers'] = 'api/v1/suppliers/index';
+$route['api/v1/suppliers/create'] = 'api/v1/suppliers/store';
+$route['api/v1/suppliers/(:num)'] = 'api/v1/suppliers/show/$1';
+$route['api/v1/suppliers/(:num)/price-history'] = 'api/v1/suppliers/price_history/$1';
+$route['api/v1/purchase-orders'] = 'api/v1/purchase_orders/index';
+$route['api/v1/purchase-orders/(:num)'] = 'api/v1/purchase_orders/show/$1';
+$route['api/v1/purchase-orders/(:num)/(:any)'] = 'api/v1/purchase_orders/action/$1/$2';
+$route['api/v1/goods-receipts'] = 'api/v1/goods_receipts/index';
+$route['api/v1/goods-receipts/(:num)'] = 'api/v1/goods_receipts/show/$1';
+$route['api/v1/goods-receipts/(:num)/(:any)'] = 'api/v1/goods_receipts/action/$1/$2';
 
 // CLI
 $route['cli/migrate/(:any)'] = 'cli/migrate/index/$1';

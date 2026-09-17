@@ -1,0 +1,13 @@
+<?php $d = $doc; ?>
+<div class="erp-page-head"><h5 class="mb-0 font-monospace" data-testid="ap-no"><?= e($d['ap_no']) ?></h5><a class="btn btn-sm btn-link" href="<?= site_url('purchasing/ap-invoices') ?>">&larr; Daftar</a></div>
+<div class="card erp-card mb-3"><div class="card-body"><dl class="row small mb-0">
+<dt class="col-2">Supplier</dt><dd class="col-4"><?= e($d['supplier']['name'] ?? '-') ?></dd><dt class="col-2">Status</dt><dd class="col-4"><?= status_badge($d['status']) ?></dd>
+<dt class="col-2">Faktur Supplier</dt><dd class="col-4"><?= e($d['supplier_invoice_no'] ?: '-') ?></dd><dt class="col-2">Referensi GR</dt><dd class="col-4"><?= $d['gr_id'] ? '<a href="' . site_url('purchasing/receipts/' . $d['gr_id']) . '">GR #' . $d['gr_id'] . '</a>' : '-' ?></dd>
+<dt class="col-2">Tgl Faktur</dt><dd class="col-4"><?= fmt_date($d['invoice_date']) ?></dd><dt class="col-2">Jatuh Tempo</dt><dd class="col-4"><?= fmt_date($d['due_date']) ?></dd>
+<dt class="col-2">Catatan</dt><dd class="col-10"><?= e($d['notes']) ?></dd></dl></div></div>
+<?php if (!in_array($d['status'], ['PAID', 'CANCELLED'], true) && can('purchasing.ap.edit')): ?>
+<form method="post" action="<?= site_url('purchasing/ap-invoices/' . $d['id'] . '/cancel') ?>" class="d-inline-flex gap-1 mb-3 needs-confirm" data-confirm="Batalkan tagihan AP ini?"><?= csrf_field() ?><input class="form-control form-control-sm" name="reason" placeholder="Alasan pembatalan" style="width:240px" data-testid="ap-cancel-reason"><button class="btn btn-sm btn-outline-danger" data-testid="ap-cancel"><i class="bi bi-slash-circle me-1"></i>Batalkan</button></form>
+<?php endif; ?>
+<div class="card erp-card"><table class="table table-sm erp-table mb-0" data-testid="ap-items-table"><thead><tr><th>#</th><th>Deskripsi</th><th class="text-end">Qty</th><th class="text-end">Harga</th><th class="text-end">Total Baris</th></tr></thead><tbody>
+<?php foreach ($d['items'] as $i): ?><tr><td><?= $i['line_no'] ?></td><td><?= e($i['description']) ?></td><td class="text-end"><?= fmt_num($i['qty'], 0) ?></td><td class="text-end small"><?= fmt_idr($i['unit_price']) ?></td><td class="text-end"><?= fmt_idr($i['line_total']) ?></td></tr><?php endforeach; ?></tbody>
+<tfoot><tr><th colspan="4" class="text-end">Subtotal</th><th class="text-end"><?= fmt_idr($d['subtotal']) ?></th></tr><tr><th colspan="4" class="text-end">Pajak</th><th class="text-end"><?= fmt_idr($d['tax_total']) ?></th></tr><tr><th colspan="4" class="text-end">Grand Total</th><th class="text-end" data-testid="ap-grand-total"><?= fmt_idr($d['grand_total']) ?></th></tr></tfoot></table></div>

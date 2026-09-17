@@ -115,6 +115,24 @@ class Demo_seeder
         }
         $log('Products OK (' . count($prodIds) . ')');
 
+        // Phase 3 — supplier master + katalog harga (idempoten)
+        $suppliers = [
+            ['SUP-KF', 'PT Kimia Farma Trading & Distribution', 'MANUFACTURER', 30, 'PBF-KF-001'],
+            ['SUP-APL', 'PT Anugerah Pharmindo Lestari', 'PBF', 30, 'PBF-APL-002'],
+            ['SUP-EPM', 'PT Enseval Putera Megatrading', 'PBF', 45, 'PBF-EPM-003'],
+        ];
+        $supIds = [];
+        foreach ($suppliers as [$code, $name, $type, $term, $lic]) {
+            $supIds[$code] = $this->upsert('suppliers', ['company_id' => $companyId, 'code' => $code], ['name' => $name, 'legal_name' => $name, 'supplier_type' => $type,
+                'payment_term_days' => $term, 'license_no' => $lic, 'currency' => 'IDR', 'is_active' => 1, 'created_by' => $adminId]);
+        }
+        foreach (['SUP-KF' => ['PCT-500-TAB' => 2000, 'ALP-05-TAB' => 1500], 'SUP-APL' => ['AMX-500-KAP' => 600, 'OMZ-20-KAP' => 900], 'SUP-EPM' => ['AML-10-TAB' => 400, 'MET-500-TAB' => 300, 'INS-GLA-PEN' => 180000]] as $sc => $items) {
+            foreach ($items as $sku => $price) {
+                $this->upsert('supplier_products', ['supplier_id' => $supIds[$sc], 'product_id' => $prodIds[$sku]], ['company_id' => $companyId, 'last_price' => $price, 'is_preferred' => 1, 'is_active' => 1]);
+            }
+        }
+        $log('Suppliers OK (' . count($supIds) . ')');
+
         if ((int) $ci->from('stock_movements')->where('movement_type', 'OPENING_BALANCE')->count_all_results() === 0) {
             $y = (int) date('Y');
             $lines = [];
@@ -148,6 +166,8 @@ class Demo_seeder
             'master' => ['product' => ['view', 'create', 'edit', 'export'], 'category' => ['view', 'create', 'edit'], 'uom' => ['view', 'create', 'edit'], 'warehouse' => ['view', 'create', 'edit'], 'reason_code' => ['view', 'create', 'edit']],
             'inventory' => ['stock' => ['view', 'export'], 'movement' => ['view', 'reverse'], 'batch' => ['view', 'quarantine'],
                 'adjustment' => ['view', 'create', 'edit', 'approve', 'cancel', 'post'], 'transfer' => ['view', 'create', 'edit', 'approve', 'cancel', 'post'], 'opname' => ['view', 'create', 'edit', 'approve', 'cancel', 'post']],
+            'purchasing' => ['supplier' => ['view', 'create', 'edit'], 'pr' => ['view', 'create', 'edit', 'approve', 'cancel'], 'po' => ['view', 'create', 'edit', 'approve', 'cancel', 'post'],
+                'gr' => ['view', 'create', 'edit', 'approve', 'cancel', 'post'], 'return' => ['view', 'create', 'edit', 'approve', 'cancel', 'post'], 'ap' => ['view', 'create', 'edit']],
             'audit' => ['log' => ['view', 'export'], 'login_history' => ['view']],
         ];
         foreach ($map as $module => $resources) {
@@ -167,14 +187,17 @@ class Demo_seeder
             'ADMIN' => ['Administrator', $all],
             'PHARMACIST' => ['Apoteker', array_merge($view, ['inventory.batch.quarantine', 'inventory.adjustment.create', 'inventory.adjustment.edit', 'inventory.opname.create', 'inventory.opname.edit'])],
             'CASHIER' => ['Kasir', ['system.dashboard.view', 'master.product.view', 'inventory.stock.view']],
-            'PURCHASING' => ['Purchasing', array_merge($view, ['master.product.create', 'master.product.edit'])],
-            'WAREHOUSE' => ['Gudang', array_merge($view, ['inventory.adjustment.create', 'inventory.adjustment.edit', 'inventory.transfer.create', 'inventory.transfer.edit', 'inventory.transfer.post', 'inventory.opname.create', 'inventory.opname.edit', 'inventory.batch.quarantine'])],
+            'PURCHASING' => ['Purchasing', array_merge($view, ['master.product.create', 'master.product.edit',
+                'purchasing.supplier.create', 'purchasing.supplier.edit', 'purchasing.pr.create', 'purchasing.pr.edit',
+                'purchasing.po.create', 'purchasing.po.edit', 'purchasing.gr.create', 'purchasing.gr.edit', 'purchasing.return.create', 'purchasing.return.edit'])],
+            'WAREHOUSE' => ['Gudang', array_merge($view, ['inventory.adjustment.create', 'inventory.adjustment.edit', 'inventory.transfer.create', 'inventory.transfer.edit', 'inventory.transfer.post', 'inventory.opname.create', 'inventory.opname.edit', 'inventory.batch.quarantine', 'purchasing.gr.create', 'purchasing.gr.edit', 'purchasing.gr.post'])],
             'SALES' => ['Sales', ['system.dashboard.view', 'master.product.view', 'inventory.stock.view']],
             'DISTRIBUTION' => ['Distribusi', ['system.dashboard.view', 'master.product.view', 'inventory.stock.view', 'inventory.transfer.view', 'inventory.transfer.post']],
             'FINANCE' => ['Keuangan', array_merge($view, ['inventory.stock.export'])],
             'ACCOUNTING' => ['Akuntansi', array_merge($view, ['inventory.stock.export'])],
-            'MANAGEMENT' => ['Manajemen', array_merge($view, ['inventory.adjustment.approve', 'inventory.adjustment.post', 'inventory.adjustment.cancel', 'inventory.transfer.approve', 'inventory.transfer.cancel', 'inventory.opname.approve', 'inventory.opname.post', 'inventory.opname.cancel', 'inventory.movement.reverse', 'master.product.export', 'audit.log.export'])],
+            'MANAGEMENT' => ['Manajemen', array_merge($view, ['inventory.adjustment.approve', 'inventory.adjustment.post', 'inventory.adjustment.cancel', 'inventory.transfer.approve', 'inventory.transfer.cancel', 'inventory.opname.approve', 'inventory.opname.post', 'inventory.opname.cancel', 'inventory.movement.reverse', 'master.product.export', 'audit.log.export', 'purchasing.pr.approve', 'purchasing.pr.cancel', 'purchasing.po.approve', 'purchasing.po.cancel', 'purchasing.po.post', 'purchasing.gr.approve', 'purchasing.gr.cancel', 'purchasing.gr.post', 'purchasing.return.approve', 'purchasing.return.cancel', 'purchasing.return.post'])],
             'AUDITOR' => ['Auditor', array_merge($view, ['audit.log.export', 'inventory.stock.export'])],
+            'FINANCE' => ['Keuangan', array_merge($view, ['inventory.stock.export', 'purchasing.ap.view', 'purchasing.ap.create', 'purchasing.ap.edit'])],
             'COMPLIANCE' => ['Compliance / Quality', array_merge($view, ['inventory.batch.quarantine', 'inventory.movement.reverse'])],
         ];
         $ids = [];

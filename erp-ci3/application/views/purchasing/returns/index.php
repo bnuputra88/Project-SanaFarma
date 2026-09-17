@@ -1,0 +1,1 @@
+<?php $this->load->view('purchasing/_doc_list', ['page' => $page, 'base' => 'purchasing/returns', 'title_new' => 'Retur Baru', 'perm' => 'purchasing.return', 'testid' => 'prt', 'with_supplier' => true, 'statuses' => ['DRAFT', 'SUBMITTED', 'APPROVED', 'POSTED', 'REJECTED', 'CANCELLED']]); ?>
