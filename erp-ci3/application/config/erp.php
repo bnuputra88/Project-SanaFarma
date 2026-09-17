@@ -87,6 +87,24 @@ $config['erp_state_machines'] = [
             'APPROVED' => ['post' => 'POSTED', 'cancel' => 'CANCELLED'],
         ],
     ],
+    // Phase 4 — Sales / POS
+    'sale' => [
+        'initial' => 'DRAFT',
+        'final' => ['VOID', 'CANCELLED'],
+        'transitions' => [
+            'DRAFT' => ['checkout' => 'PAID', 'edit' => 'DRAFT', 'cancel' => 'CANCELLED'],
+            'PAID' => ['void' => 'VOID'],
+        ],
+    ],
+    'sales_return' => [
+        'initial' => 'DRAFT',
+        'final' => ['POSTED', 'REJECTED', 'CANCELLED'],
+        'transitions' => [
+            'DRAFT' => ['submit' => 'SUBMITTED', 'edit' => 'DRAFT', 'cancel' => 'CANCELLED'],
+            'SUBMITTED' => ['approve' => 'APPROVED', 'reject' => 'REJECTED', 'cancel' => 'CANCELLED'],
+            'APPROVED' => ['post' => 'POSTED', 'cancel' => 'CANCELLED'],
+        ],
+    ],
 ];
 
 // Default numbering patterns; overridable per company in document_sequences.pattern
@@ -101,6 +119,10 @@ $config['erp_numbering_defaults'] = [
     'GOODS_RECEIPT' => ['pattern' => 'GR/{BRANCH}/{YYYY}{MM}/{SEQ:5}', 'reset' => 'monthly'],
     'PURCHASE_RETURN' => ['pattern' => 'PRT/{BRANCH}/{YYYY}{MM}/{SEQ:5}', 'reset' => 'monthly'],
     'AP_INVOICE' => ['pattern' => 'AP/{YYYY}{MM}/{SEQ:5}', 'reset' => 'monthly'],
+    'SALE' => ['pattern' => 'POS/{BRANCH}/{YYYY}{MM}{DD}/{SEQ:5}', 'reset' => 'daily'],
+    'SALES_RETURN' => ['pattern' => 'SRT/{BRANCH}/{YYYY}{MM}/{SEQ:5}', 'reset' => 'monthly'],
+    'CASHIER_SHIFT' => ['pattern' => 'SHIFT/{BRANCH}/{YYYY}{MM}{DD}/{SEQ:4}', 'reset' => 'daily'],
+    'CUSTOMER' => ['pattern' => 'CUST{YY}{SEQ:6}', 'reset' => 'never'],
 ];
 
 // Stock movement types: sign tells the engine whether the line adds (+1) or removes (-1) on-hand quantity.

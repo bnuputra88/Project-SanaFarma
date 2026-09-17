@@ -50,3 +50,6 @@ $lang['status_closed'] = 'Ditutup';
 $lang['status_open'] = 'Terbuka';
 $lang['status_partial_paid'] = 'Dibayar Sebagian';
 $lang['status_paid'] = 'Lunas';
+$lang['status_void'] = 'Dibatalkan (Void)';
+$lang['action_checkout'] = 'Bayar';
+$lang['action_void'] = 'Void';

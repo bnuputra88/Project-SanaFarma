@@ -11,6 +11,8 @@ $menu = [
     ['Pembelian', null, 'bi-cart', null, [
         ['Ringkasan', 'purchasing', 'purchasing.po.view'], ['Supplier', 'purchasing/suppliers', 'purchasing.supplier.view'], ['Permintaan (PR)', 'purchasing/requests', 'purchasing.pr.view'], ['Pesanan (PO)', 'purchasing/orders', 'purchasing.po.view'],
         ['Penerimaan (GR)', 'purchasing/receipts', 'purchasing.gr.view'], ['Retur Pembelian', 'purchasing/returns', 'purchasing.return.view'], ['Tagihan (AP)', 'purchasing/ap-invoices', 'purchasing.ap.view']]],
+    ['Penjualan', null, 'bi-shop', null, [
+        ['Kasir (POS)', 'sales/pos', 'sales.pos.view'], ['Shift Kasir', 'sales/shifts', 'sales.shift.view'], ['Pelanggan / Pasien', 'sales/customers', 'sales.customer.view'], ['Retur Penjualan', 'sales/returns', 'sales.return.view']]],
     ['Sistem', null, 'bi-gear', null, [
         ['Pengguna', 'system/users', 'system.user.view'], ['Role & Hak Akses', 'system/roles', 'system.role.view'], ['Parameter', 'system/settings', 'system.setting.view'],
         ['Audit Trail', 'audit', 'audit.log.view'], ['Riwayat Login', 'system/login-history', 'audit.login_history.view']]],

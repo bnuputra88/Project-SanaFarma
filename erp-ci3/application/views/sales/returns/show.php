@@ -1,0 +1,10 @@
+<?php $d = $doc; ?>
+<div class="erp-page-head"><h5 class="mb-0 font-monospace" data-testid="srt-no"><?= e($d['return_no']) ?></h5><a class="btn btn-sm btn-link" href="<?= site_url('sales/returns') ?>">&larr; Daftar</a></div>
+<?php $this->load->view('partials/workflow_panel', ['doc' => $d, 'base' => 'sales/returns',
+    'perms' => ['submit' => 'sales.return.edit', 'approve' => 'sales.return.approve', 'reject' => 'sales.return.approve', 'cancel' => 'sales.return.cancel', 'post' => 'sales.return.post']]); ?>
+<div class="card erp-card mb-3"><div class="card-body"><dl class="row small mb-0">
+<dt class="col-2">Tanggal</dt><dd class="col-4"><?= fmt_date($d['return_date']) ?></dd><dt class="col-2">Nilai</dt><dd class="col-4"><?= fmt_idr($d['total_value']) ?></dd>
+<dt class="col-2">Mutasi stok</dt><dd class="col-4"><?= $d['movement_id'] ? '<a href="' . site_url('inventory/movements/' . $d['movement_id']) . '">#' . $d['movement_id'] . '</a>' : '-' ?></dd><dt class="col-2">Catatan</dt><dd class="col-4"><?= e($d['notes']) ?></dd>
+<?php if ($d['rejection_reason']): ?><dt class="col-2 text-danger">Alasan tolak</dt><dd class="col-10 text-danger"><?= e($d['rejection_reason']) ?></dd><?php endif; ?></dl></div></div>
+<div class="card erp-card"><table class="table table-sm erp-table mb-0" data-testid="srt-items-table"><thead><tr><th>#</th><th>Produk</th><th>Batch/ED</th><th class="text-end">Qty</th><th class="text-end">Harga</th><th class="text-end">Nilai</th></tr></thead><tbody>
+<?php foreach ($d['items'] as $i): ?><tr><td><?= $i['line_no'] ?></td><td><?= e($i['product_name']) ?><br><small class="text-muted font-monospace"><?= e($i['sku']) ?></small></td><td class="small font-monospace"><?= e($i['batch_no'] ?? '-') ?> <span class="text-muted"><?= fmt_date($i['expiry_date'] ?? null) ?></span></td><td class="text-end"><?= fmt_num($i['qty'], 0) ?></td><td class="text-end small"><?= fmt_idr($i['unit_price']) ?></td><td class="text-end small"><?= fmt_idr($i['qty'] * $i['unit_price']) ?></td></tr><?php endforeach; ?></tbody></table></div>

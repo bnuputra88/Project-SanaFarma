@@ -102,6 +102,24 @@ $route['purchasing/ap-invoices/(:num)'] = 'ap_invoices/show/$1';
 $route['purchasing/ap-invoices/from-gr/(:num)'] = 'ap_invoices/create_from_gr/$1';
 $route['purchasing/ap-invoices/(:num)/cancel'] = 'ap_invoices/cancel/$1';
 
+// Penjualan / POS
+$route['sales/pos'] = 'sales/index';
+$route['sales/pos/create'] = 'sales/create';
+$route['sales/pos/(:num)'] = 'sales/show/$1';
+$route['sales/pos/(:num)/void'] = 'sales/void/$1';
+$route['sales/customers'] = 'customers/index';
+$route['sales/customers/create'] = 'customers/create';
+$route['sales/customers/search'] = 'customers/search';
+$route['sales/customers/(:num)/edit'] = 'customers/edit/$1';
+$route['sales/shifts'] = 'cashier_shifts/index';
+$route['sales/shifts/open'] = 'cashier_shifts/open';
+$route['sales/shifts/(:num)/close'] = 'cashier_shifts/close/$1';
+$route['sales/shifts/(:num)'] = 'cashier_shifts/show/$1';
+$route['sales/returns'] = 'sales_returns/index';
+$route['sales/returns/create'] = 'sales_returns/create';
+$route['sales/returns/(:num)'] = 'sales_returns/show/$1';
+$route['sales/returns/(:num)/action/(:any)'] = 'sales_returns/action/$1/$2';
+
 // REST API v1
 $route['api/v1/health'] = 'api/v1/health/index';
 $route['api/v1/auth/login'] = 'api/v1/auth/login';

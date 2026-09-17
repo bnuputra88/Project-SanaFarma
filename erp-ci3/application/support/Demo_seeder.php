@@ -168,6 +168,7 @@ class Demo_seeder
                 'adjustment' => ['view', 'create', 'edit', 'approve', 'cancel', 'post'], 'transfer' => ['view', 'create', 'edit', 'approve', 'cancel', 'post'], 'opname' => ['view', 'create', 'edit', 'approve', 'cancel', 'post']],
             'purchasing' => ['supplier' => ['view', 'create', 'edit'], 'pr' => ['view', 'create', 'edit', 'approve', 'cancel'], 'po' => ['view', 'create', 'edit', 'approve', 'cancel', 'post'],
                 'gr' => ['view', 'create', 'edit', 'approve', 'cancel', 'post'], 'return' => ['view', 'create', 'edit', 'approve', 'cancel', 'post'], 'ap' => ['view', 'create', 'edit']],
+            'sales' => ['customer' => ['view', 'create', 'edit'], 'shift' => ['view', 'open', 'close'], 'pos' => ['view', 'create', 'void'], 'return' => ['view', 'create', 'edit', 'approve', 'cancel', 'post']],
             'audit' => ['log' => ['view', 'export'], 'login_history' => ['view']],
         ];
         foreach ($map as $module => $resources) {
@@ -185,8 +186,8 @@ class Demo_seeder
         $view = array_filter($all, fn($c) => substr($c, -5) === '.view');
         $defs = [
             'ADMIN' => ['Administrator', $all],
-            'PHARMACIST' => ['Apoteker', array_merge($view, ['inventory.batch.quarantine', 'inventory.adjustment.create', 'inventory.adjustment.edit', 'inventory.opname.create', 'inventory.opname.edit'])],
-            'CASHIER' => ['Kasir', ['system.dashboard.view', 'master.product.view', 'inventory.stock.view']],
+            'PHARMACIST' => ['Apoteker', array_merge($view, ['inventory.batch.quarantine', 'inventory.adjustment.create', 'inventory.adjustment.edit', 'inventory.opname.create', 'inventory.opname.edit', 'sales.customer.create', 'sales.customer.edit', 'sales.pos.create', 'sales.pos.void', 'sales.shift.open', 'sales.shift.close', 'sales.return.create', 'sales.return.edit', 'sales.return.approve', 'sales.return.post'])],
+            'CASHIER' => ['Kasir', ['system.dashboard.view', 'master.product.view', 'inventory.stock.view', 'sales.customer.view', 'sales.customer.create', 'sales.customer.edit', 'sales.shift.view', 'sales.shift.open', 'sales.shift.close', 'sales.pos.view', 'sales.pos.create', 'sales.return.view', 'sales.return.create', 'sales.return.edit']],
             'PURCHASING' => ['Purchasing', array_merge($view, ['master.product.create', 'master.product.edit',
                 'purchasing.supplier.create', 'purchasing.supplier.edit', 'purchasing.pr.create', 'purchasing.pr.edit',
                 'purchasing.po.create', 'purchasing.po.edit', 'purchasing.gr.create', 'purchasing.gr.edit', 'purchasing.return.create', 'purchasing.return.edit'])],
