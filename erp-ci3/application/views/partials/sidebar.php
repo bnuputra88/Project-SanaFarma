@@ -9,7 +9,7 @@ $menu = [
         ['Buku Besar Stok', 'inventory/stock/ledger', 'inventory.stock.view'], ['Mutasi Stok', 'inventory/movements', 'inventory.movement.view'],
         ['Penyesuaian', 'inventory/adjustments', 'inventory.adjustment.view'], ['Transfer', 'inventory/transfers', 'inventory.transfer.view'], ['Stock Opname', 'inventory/opnames', 'inventory.opname.view']]],
     ['Pembelian', null, 'bi-cart', null, [
-        ['Supplier', 'purchasing/suppliers', 'purchasing.supplier.view'], ['Permintaan (PR)', 'purchasing/requests', 'purchasing.pr.view'], ['Pesanan (PO)', 'purchasing/orders', 'purchasing.po.view'],
+        ['Ringkasan', 'purchasing', 'purchasing.po.view'], ['Supplier', 'purchasing/suppliers', 'purchasing.supplier.view'], ['Permintaan (PR)', 'purchasing/requests', 'purchasing.pr.view'], ['Pesanan (PO)', 'purchasing/orders', 'purchasing.po.view'],
         ['Penerimaan (GR)', 'purchasing/receipts', 'purchasing.gr.view'], ['Retur Pembelian', 'purchasing/returns', 'purchasing.return.view'], ['Tagihan (AP)', 'purchasing/ap-invoices', 'purchasing.ap.view']]],
     ['Sistem', null, 'bi-gear', null, [
         ['Pengguna', 'system/users', 'system.user.view'], ['Role & Hak Akses', 'system/roles', 'system.role.view'], ['Parameter', 'system/settings', 'system.setting.view'],

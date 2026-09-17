@@ -35,4 +35,15 @@ class Purchase_orders extends Api_Controller
             $this->ok(['id' => $id, 'status' => $status]);
         });
     }
+
+    public function from_pr(int $prId): void
+    {
+        $this->run(function () use ($prId) {
+            $this->requireMethod('POST');
+            $this->authorize('purchasing.po.create');
+            $svc = $this->service(Purchase_order_service::class);
+            $id = $svc->createFromRequest($prId, $this->body());
+            $this->ok($svc->get($id), [], 201);
+        });
+    }
 }

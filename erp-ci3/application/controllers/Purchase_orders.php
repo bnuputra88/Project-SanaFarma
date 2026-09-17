@@ -17,7 +17,13 @@ class Purchase_orders extends Web_Controller
             $this->handle(fn() => $this->service(Purchase_order_service::class)->create($this->input->post(null, false)), 'purchasing/orders', 'PO dibuat (DRAFT)');
             return;
         }
-        $this->render('purchasing/orders/form', ['title' => 'PO Baru', 'doc' => null, 'suppliers' => $this->service(Supplier_service::class)->active(),
+        $prefill = null;
+        if ($this->input->get('pr_id')) {
+            $pr = $this->service(Purchase_request_service::class)->get((int) $this->input->get('pr_id'));
+            $prefill = ['pr_id' => $pr['id'], 'warehouse_id' => $pr['warehouse_id'], 'notes' => 'Dari PR ' . $pr['pr_no'],
+                'items' => array_map(fn($i) => ['product_id' => $i['product_id'], 'product_name' => $i['product_name'], 'sku' => $i['sku'], 'qty_ordered' => $i['qty']], $pr['items'])];
+        }
+        $this->render('purchasing/orders/form', ['title' => 'PO Baru', 'doc' => $prefill, 'suppliers' => $this->service(Supplier_service::class)->active(),
             'warehouses' => $this->service(Master_service::class)->activeWarehouses()]);
     }
 

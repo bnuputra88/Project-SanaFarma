@@ -3,6 +3,7 @@
 class Purchase_order_service
 {
     private $docs;
+    private $requests;
     private $suppliers;
     private $workflow;
     private $numbering;
@@ -18,6 +19,7 @@ class Purchase_order_service
                                 Warehouse_repository $warehouses, Product_repository $products, Setting_service $settings, Audit_service $audit, Request_context $ctx, Db $db)
     {
         $this->docs = Purchase_document_repository::orders($cidb);
+        $this->requests = Purchase_document_repository::requests($cidb);
         $this->suppliers = $suppliers;
         $this->workflow = $workflow;
         $this->numbering = $numbering;
@@ -28,6 +30,28 @@ class Purchase_order_service
         $this->audit = $audit;
         $this->ctx = $ctx;
         $this->db = $db;
+    }
+
+    /** Konversi PR (APPROVED) → PO draft. Harga awal diambil dari katalog supplier bila ada. */
+    public function createFromRequest(int $prId, array $d): int
+    {
+        $pr = $this->requests->findOrFail($prId);
+        if ((int) $pr['company_id'] !== $this->ctx->company_id) {
+            throw new Not_found_exception();
+        }
+        if ($pr['status'] !== 'APPROVED') {
+            throw new Invalid_transition_exception('Hanya PR berstatus APPROVED yang dapat dikonversi menjadi PO');
+        }
+        $supplierId = (int) ($d['supplier_id'] ?? 0);
+        $catalog = $supplierId ? array_column($this->db->ci->select('product_id, last_price')->from('supplier_products')->where('supplier_id', $supplierId)->get()->result_array(), 'last_price', 'product_id') : [];
+        $items = [];
+        foreach ($this->requests->items($prId) as $it) {
+            $items[] = ['product_id' => (int) $it['product_id'], 'uom_id' => $it['uom_id'] ?? null, 'qty_ordered' => (float) $it['qty'],
+                'unit_price' => (float) ($catalog[(int) $it['product_id']] ?? $it['estimated_price'] ?? 0), 'discount_pct' => 0, 'tax_pct' => 0, 'notes' => $it['notes'] ?? null];
+        }
+        $payload = ['supplier_id' => $supplierId, 'warehouse_id' => $d['warehouse_id'] ?? $pr['warehouse_id'], 'order_date' => $d['order_date'] ?? date('Y-m-d'),
+            'expected_date' => $d['expected_date'] ?? $pr['required_date'], 'notes' => $d['notes'] ?? ('Dari PR ' . $pr['pr_no']), 'pr_id' => $prId, 'items' => $items];
+        return $this->create($payload);
     }
 
     public function list(array $input): Paginator
@@ -64,6 +88,14 @@ class Purchase_order_service
                 'tax_total' => $totals['tax'], 'grand_total' => $totals['grand'], 'created_by' => $this->ctx->user_id]);
             $this->docs->replaceItems($id, $items);
             $this->workflow->start('purchase_order', $id, $no);
+            // Konversi dari PR: tutup PR bila aktor berwenang menyetujui (jaga prinsip transisi eksplisit).
+            if (!empty($d['pr_id']) && $this->ctx->can('purchasing.pr.approve')) {
+                $pr = $this->requests->findOrFail((int) $d['pr_id'], true);
+                if ((int) $pr['company_id'] === $this->ctx->company_id && $pr['status'] === 'APPROVED') {
+                    $this->workflow->transition('purchase_request', (int) $d['pr_id'], $pr['pr_no'], 'APPROVED', 'close', 'purchasing.pr.approve', 'Dikonversi ke PO ' . $no);
+                    $this->requests->update((int) $d['pr_id'], ['status' => 'CLOSED', 'closed_at' => date('Y-m-d H:i:s')]);
+                }
+            }
             $this->audit->log('purchasing', 'create', 'purchase_orders', $id, null, ['po_no' => $no, 'items' => count($items), 'grand_total' => $totals['grand']], $no);
             return $id;
         });

@@ -72,6 +72,7 @@ $route['inventory/opnames/(:num)/count'] = 'stock_opnames/count/$1';
 $route['inventory/opnames/(:num)/action/(:any)'] = 'stock_opnames/action/$1/$2';
 
 // Purchasing (Phase 3)
+$route['purchasing'] = 'purchasing/dashboard';
 $route['purchasing/suppliers'] = 'suppliers/index';
 $route['purchasing/suppliers/create'] = 'suppliers/create';
 $route['purchasing/suppliers/(:num)'] = 'suppliers/show/$1';
@@ -123,6 +124,13 @@ $route['api/v1/purchase-orders/(:num)/(:any)'] = 'api/v1/purchase_orders/action/
 $route['api/v1/goods-receipts'] = 'api/v1/goods_receipts/index';
 $route['api/v1/goods-receipts/(:num)'] = 'api/v1/goods_receipts/show/$1';
 $route['api/v1/goods-receipts/(:num)/(:any)'] = 'api/v1/goods_receipts/action/$1/$2';
+$route['api/v1/purchase-requests'] = 'api/v1/purchase_requests/index';
+$route['api/v1/purchase-requests/(:num)'] = 'api/v1/purchase_requests/show/$1';
+$route['api/v1/purchase-requests/(:num)/(:any)'] = 'api/v1/purchase_requests/action/$1/$2';
+$route['api/v1/purchase-returns'] = 'api/v1/purchase_returns/index';
+$route['api/v1/purchase-returns/(:num)'] = 'api/v1/purchase_returns/show/$1';
+$route['api/v1/purchase-returns/(:num)/(:any)'] = 'api/v1/purchase_returns/action/$1/$2';
+$route['api/v1/purchase-orders/from-pr/(:num)'] = 'api/v1/purchase_orders/from_pr/$1';
 
 // CLI
 $route['cli/migrate/(:any)'] = 'cli/migrate/index/$1';
