@@ -28,3 +28,24 @@ Ambiguitas yang diidentifikasi & keputusan: lihat Assumptions A1–A7. Kebutuhan
 
 ## Next dependencies (Phase 3 — Procurement)
 Supplier master (+ FK `batches.supplier_id`), PR/PO/GR dengan `Inventory_service::post('RECEIPT')` + batch capture (sudah teruji), inspeksi/karantina saat terima, purchase return via `ISSUE` + reason RETURN, AP foundation (`vendor_invoices`, `ap_ledger`), numbering `PR/PO/GR/PRT`, permission `purchasing.*`, state machines PO/GR di `config/erp.php`.
+
+## Phase 3 — Procurement ✅
+**Objective**: alur pengadaan lengkap dari permintaan sampai penerimaan stok & fondasi hutang, mengikuti pola Phase 2 (thin controller → service → repository, `Db::transaction`, State_machine, Workflow, Audit, Numbering) tanpa menulis ulang engine stok.
+**Files**: `migrations/004_procurement.php`; `repositories/{Supplier,Supplier_product,Purchase_document,Ap_invoice}_repository.php`; `validators/Purchase_document_validator.php`; `services/{Supplier,Purchase_request,Purchase_order,Goods_receipt,Purchase_return,Ap_invoice}_service.php`; `controllers/{Suppliers,Purchase_requests,Purchase_orders,Goods_receipts,Purchase_returns,Ap_invoices}.php`; `controllers/api/v1/{Suppliers,Purchase_orders,Goods_receipts}.php`; views `purchasing/{suppliers,requests,orders,receipts,returns,ap_invoices}/*` + `_doc_list.php`.
+**Database**: `004_procurement` (13 tabel: suppliers, supplier_products, supplier_price_history, purchase_requests + items, purchase_orders + items, goods_receipts + items, purchase_returns + items, ap_invoices + items) + FK `batches.supplier_id`. Total **52 tabel** + `schema_migrations`. Migrasi version = 4.
+**State machines** (config/erp.php): `purchase_request`, `purchase_order`, `goods_receipt`, `purchase_return`. Numbering: `PURCHASE_REQ/PURCHASE_ORDER/GOODS_RECEIPT/PURCHASE_RETURN/AP_INVOICE`.
+**RBAC**: 22 permission baru `purchasing.{supplier,pr,po,gr,return,ap}.*` (idempoten di seeder). Grant: PURCHASING (buat/ubah), WAREHOUSE (GR post), MANAGEMENT (approve/cancel/post), FINANCE (AP). ADMIN semua.
+**Routes**: `purchasing/{suppliers,requests,orders,receipts,returns,ap-invoices}*`; API `api/v1/{suppliers,purchase-orders,goods-receipts}*`.
+**Aturan bisnis kunci**:
+- GR posting → `Inventory_service::post('RECEIPT')`: batch capture (batch_no/expiry/manufacture), put-away ke `location_id`, kondisi per hasil inspeksi (ACCEPTED→GOOD, QUARANTINE→QUARANTINE, REJECTED→tidak masuk stok). **Produk batch/expiry-tracked WAJIB batch+expiry — divalidasi di service layer**, bukan hanya form.
+- Harga beli GR yang berbeda dari PO dicatat sebagai **varian** di `supplier_price_history` (`po_price` disimpan), tidak menimpa PO.
+- GR posting menyinkronkan `qty_received` PO dan status PO (PARTIAL/RECEIVED).
+- **Reversal GR ditolak `Conflict_exception` (409)** bila stok yang diterима sudah terpakai (FEFO sudah alokasi keluar) — bukan stok negatif.
+- Purchase return → `ISSUE` + `reason_type=RETURN`; negative-stock dicegah engine.
+- AP invoice foundation dibuat dari GR POSTED (idempoten, 1 GR = 1 AP). Pembayaran & posting GL → Phase 6.
+**Tests**: `Unit/ProcurementStateMachineTest` (4), `Integration/GoodsReceiptTest` (3: posting+ledger+harga, wajib-batch farmasi, reversal ditolak saat stok terpakai). **Ditulis tetapi belum dijalankan di lingkungan ini** (tanpa install per instruksi); semua file lulus `php -l` (PHP 8.2 CLI). Jalankan `docker compose exec app vendor/bin/phpunit`.
+**Known limitations**:
+- AP belum ada pembayaran/aging/posting GL (Phase 6). `ap_invoices.amount_paid` disiapkan, belum dipakai.
+- PO belum multi-currency nyata (kolom `currency` disimpan, konversi belum).
+- Put-away GR menerima `location_id` manual (belum saran lokasi otomatis).
+- Approval threshold/parallel approver masih single-step (skema workflow sudah siap).

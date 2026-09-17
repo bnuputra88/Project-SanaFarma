@@ -25,6 +25,24 @@ HTTP: 200/201 sukses · 401 auth · 403 izin · 404 · 409 konflik/transisi · 4
 | POST | /stock/adjustments | Bearer | inventory.adjustment.create | body: `{warehouse_id, adjustment_date, reason_code_id, notes, items:[{product_id, batch_id?, location_id?, condition_code?, qty_change, unit_cost?, notes?}]}` → 201 dokumen DRAFT |
 | POST | /stock/adjustments/{id}/{submit\|approve\|reject\|cancel\|post} | Bearer | per aksi (edit/approve/cancel/post) | body `{notes?}` (wajib untuk reject) → `{id, status}` |
 
+## Endpoint Phase 3 — Procurement
+Semua butuh Bearer token + permission `purchasing.*`.
+
+| Method | Path | Permission | Keterangan |
+|--------|------|------------|------------|
+| GET | `/suppliers` | `purchasing.supplier.view` | List + filter `q`, `supplier_type`, `is_active`, paginasi. |
+| POST | `/suppliers/create` | `purchasing.supplier.create` | Buat/simpan supplier (body JSON). |
+| GET | `/suppliers/{id}` | `purchasing.supplier.view` | Detail + katalog + riwayat harga. |
+| GET | `/suppliers/{id}/price-history` | `purchasing.supplier.view` | Riwayat harga (opsional `?product_id=`). |
+| GET | `/purchase-orders` | `purchasing.po.view` | List PO. |
+| POST | `/purchase-orders` | `purchasing.po.create` | Buat PO (DRAFT). Body: `supplier_id, warehouse_id, order_date, items[]`. |
+| GET | `/purchase-orders/{id}` | `purchasing.po.view` | Detail PO + item + total. |
+| POST | `/purchase-orders/{id}/{action}` | per aksi | `submit\|approve\|reject\|cancel\|order\|close`. |
+| GET | `/goods-receipts` | `purchasing.gr.view` | List GR. |
+| POST | `/goods-receipts` | `purchasing.gr.create` | Buat GR (DRAFT). Body: `supplier_id, warehouse_id, receipt_date, po_id?, items[]` (batch_no/expiry wajib untuk produk farmasi). |
+| GET | `/goods-receipts/{id}` | `purchasing.gr.view` | Detail GR. |
+| POST | `/goods-receipts/{id}/{action}` | per aksi | `submit\|approve\|reject\|cancel\|post\|reverse`. `post` → `RECEIPT` ke ledger; `reverse` ditolak (409 CONFLICT) bila stok sudah terpakai. |
+
 ## Contoh
 ```bash
 curl -s -X POST $URL/api/v1/auth/login -H 'Content-Type: application/json' -d '{"identifier":"admin","password":"..."}'
